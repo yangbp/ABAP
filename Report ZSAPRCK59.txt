@@ -1,0 +1,44 @@
+##This report for generate the costing run header
+REPORT ZSAPRCK59.
+
+TABLES: kala,kalv.
+DATA: gs_kala TYPE kala,
+      gs_kalv TYPE kalv.
+
+PARAMETERS: p_kalaid TYPE ck_kalaid,
+            p_kadat  TYPE ck_kaladat,
+            p_rdate  LIKE sy-datum.
+
+START-OF-SELECTION.
+
+  SELECT SINGLE * INTO gs_kala FROM kala WHERE kalaid = p_kalaid
+                              AND kaladat = p_kadat.
+  IF sy-subrc <> 0.
+    SELECT SINGLE * INTO gs_kala FROM kala WHERE kalaid = p_kalaid
+                                AND kaladat = p_rdate.
+    gs_kala-kaladat =  p_kadat.
+    gs_kala-kadat = p_kadat.
+    gs_kala-bidat = p_kadat.
+    gs_kala-bwdat = p_kadat.
+    gs_kala-aldat = p_kadat.
+    INSERT kala FROM  gs_kala.
+    COMMIT WORK.
+    IF sy-subrc = 0.
+      WRITE: 'KALA has been updated'.
+    ENDIF.
+
+  ENDIF.
+  SELECT SINGLE * INTO gs_kalv FROM kalv WHERE kalaid = p_kalaid
+                              AND kaladat = p_kadat.
+  IF sy-subrc <> 0.
+    SELECT SINGLE * INTO gs_kalv FROM kalv WHERE kalaid = p_kalaid
+                                AND kaladat = p_rdate.
+    gs_kalv-kaladat =  p_kadat.
+    INSERT kalv FROM  gs_kalv.
+    COMMIT WORK.
+    IF sy-subrc = 0.
+      WRITE:/ ' KALV has been updated'.
+    ENDIF.
+  ENDIF.
+
+WAIT UP TO 5 SECONDS.
