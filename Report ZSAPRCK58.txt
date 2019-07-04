@@ -1,3 +1,4 @@
+##This program for setting the costing run date
 REPORT ZSAPRCK58.
 
 DATA: TVARVC.
